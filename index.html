@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAHATHIR MOHARAAJ — Smart Digital Card</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+
+<style>
+:root {
+    --primary: #1a1aec;
+    --primary-light: #4f46e5;
+    --secondary: #0b1e4b;
+    --accent: #00d4aa;
+    --gold: #f0c040;
+    --text-main: #0f172a;
+    --text-light: #64748b;
+    --white: #f8faff;
+    --card-bg: #ffffff;
+    --glass: rgba(255,255,255,0.12);
+    --shadow-blue: rgba(26,26,236,0.25);
+    --shadow-deep: rgba(11,30,75,0.4);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { background: radial-gradient(ellipse at 30% 20%, #0d0d2b 0%, #070714 60%, #0a0a1a 100%); display:flex; justify-content:center; min-height:100vh; padding:20px 0; font-family:'Plus Jakarta Sans',sans-serif; }
+
+/* ====== PARTICLE BACKGROUND ====== */
+#particles { position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+.particle { position:absolute; border-radius:50%; animation: floatUp linear infinite; opacity:0; }
+@keyframes floatUp { 0%{transform:translateY(110vh) scale(0);opacity:0;} 10%{opacity:1;} 90%{opacity:0.6;} 100%{transform:translateY(-10vh) scale(1.2);opacity:0;} }
+
+/* ====== CARD CONTAINER ====== */
+.card-container {
+    width:100%; max-width:480px;
+    background: linear-gradient(170deg, #ffffff 0%, #f0f4ff 60%, #e8f0fe 100%);
+    min-height:100vh; position:relative; z-index:10;
+    box-shadow: 0 0 80px -10px var(--shadow-blue), 0 0 200px -30px var(--primary);
+    border-radius:40px; overflow:hidden; padding-bottom:60px;
+    animation: cardReveal 0.8s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes cardReveal { from{opacity:0;transform:translateY(40px) scale(0.95);} to{opacity:1;transform:translateY(0) scale(1);} }
+
+/* ====== HERO ====== */
+.hero {
+    height:180px; position:relative; overflow:hidden;
+    background: linear-gradient(135deg, #0b1e4be0 0%, #1a1aec 50%, #0a0a2ad2 100%);
+}
+.hero-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.5; }
+.hero-overlay {
+    position:absolute; inset:0;
+    background: linear-gradient(180deg, rgba(11, 30, 75, 0) 0%, rgba(11,30,75,0.7) 100%);
+}
+.hero-particles { position:absolute; inset:0; overflow:hidden; }
+.hero-orb { position:absolute; border-radius:50%; filter:blur(40px); animation:orbPulse 4s ease-in-out infinite alternate; }
+.orb1 { width:200px; height:200px; background:rgba(78, 70, 229, 0); top:-60px; right:-40px; animation-delay:0s; }
+.orb2 { width:150px; height:150px; background:rgba(0, 212, 170, 0); bottom:-40px; left:20px; animation-delay:1.5s; }
+@keyframes orbPulse { from{transform:scale(1);opacity:0.6;} to{transform:scale(1.3);opacity:1;} }
+
+.hero-badge {
+    position:absolute; top:20px; right:20px;
+    background:rgba(255,255,255,0.1); backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,0.2); border-radius:50px;
+    padding:6px 14px; color:rgba(255,255,255,0.9); font-size:0.7rem; font-weight:700; letter-spacing:2px;
+    animation: fadeIn 1s 0.5s both;
+}
+@keyframes fadeIn { from{opacity:0;transform:translateX(20px);} to{opacity:1;transform:translateX(0);} }
+
+/* ====== PROFILE HEADER ====== */
+.profile-header { text-align:center; margin-top:-80px; padding:0 30px; position:relative; z-index:10; }
+
+.main-logo-wrap {
+    width:140px; height:140px; margin:0 auto 0;
+    border-radius:35px;
+    padding:3px;
+    background: linear-gradient(135deg, var(--accent), var(--primary), var(--gold));
+    box-shadow: 0 20px 60px rgba(26,26,236,0.5), 0 0 0 6px rgba(255,255,255,0.8);
+    animation: logoEntry 0.8s 0.3s cubic-bezier(0.16,1,0.3,1) both;
+    position:relative;
+}
+@keyframes logoEntry { from{opacity:0;transform:translateY(30px) scale(0.8);} to{opacity:1;transform:translateY(0) scale(1);} }
+.main-logo { width:100%; height:100%; border-radius:33px; object-fit:cover; display:block; }
+
+.online-dot {
+    position:absolute; bottom:8px; right:8px;
+    width:18px; height:18px; background:#22c55e;
+    border-radius:50%; border:3px solid white;
+    box-shadow:0 0 12px #22c55e;
+    animation:blink 2s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{box-shadow:0 0 8px #22c55e;} 50%{box-shadow:0 0 20px #22c55e, 0 0 40px rgba(34,197,94,0.4);} }
+
+.company-info { animation: textEntry 0.8s 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+@keyframes textEntry { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+.company-info h1 { font-family:'Cinzel',serif; font-size:2rem; font-weight:900; color:var(--secondary); margin-top:18px; letter-spacing:2px; }
+.company-info .title-tag { color:var(--primary-light); font-weight:700; letter-spacing:3px; font-size:0.75rem; margin-bottom:8px; text-transform:uppercase; }
+.company-info .bio {
+    color:var(--text-light); font-size:0.9rem; line-height:1.6;
+    background:linear-gradient(135deg,rgba(79,70,229,0.08),rgba(0,212,170,0.08));
+    border:1px solid rgba(79,70,229,0.15); border-radius:15px; padding:10px 15px; margin-top:10px;
+}
+
+/* ====== DIVIDER ====== */
+.fancy-divider { display:flex; align-items:center; gap:12px; padding:20px 30px 0; }
+.fancy-divider .line { flex:1; height:1px; background:linear-gradient(90deg,transparent,rgba(26,26,236,0.3),transparent); }
+.fancy-divider .dot { width:8px; height:8px; border-radius:50%; background:var(--primary); box-shadow:0 0 8px var(--primary); }
+
+/* ====== ACTION BAR ====== */
+.action-bar { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; padding:20px 25px 10px; }
+.action-item { display:flex; flex-direction:column; align-items:center; text-decoration:none; color:var(--secondary); font-weight:700; font-size:0.65rem; gap:8px; animation:itemPop 0.5s both; letter-spacing:1px; }
+.action-item:nth-child(1){animation-delay:0.6s}
+.action-item:nth-child(2){animation-delay:0.7s}
+.action-item:nth-child(3){animation-delay:0.8s}
+.action-item:nth-child(4){animation-delay:0.9s}
+@keyframes itemPop { from{opacity:0;transform:scale(0.5);} to{opacity:1;transform:scale(1);} }
+.icon-box {
+    width:58px; height:58px; border-radius:20px;
+    background:linear-gradient(135deg,#e8eeff,#f0f4ff);
+    box-shadow:0 8px 25px rgba(26,26,236,0.2), inset 0 1px 0 rgba(255,255,255,0.8);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.3rem; color:var(--primary); transition:all 0.35s cubic-bezier(0.16,1,0.3,1);
+    position:relative; overflow:hidden;
+}
+.icon-box::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,var(--primary),var(--primary-light)); opacity:0; transition:opacity 0.3s; }
+.icon-box i { position:relative; z-index:1; transition:color 0.3s; }
+.action-item:hover .icon-box { transform:translateY(-6px) scale(1.05); box-shadow:0 20px 40px rgba(26,26,236,0.35); }
+.action-item:hover .icon-box::before { opacity:1; }
+.action-item:hover .icon-box i { color:#fff; }
+
+/* ====== SOCIAL BAR ====== */
+.social-bar { display:flex; justify-content:center; gap:14px; padding:8px 30px 20px; }
+.social-icon {
+    width:46px; height:46px; border-radius:50%;
+    background:linear-gradient(135deg,#e8eeff,#f0f4ff);
+    box-shadow:0 6px 20px rgba(26,26,236,0.15);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.1rem; color:var(--text-light); text-decoration:none;
+    transition:all 0.35s cubic-bezier(0.16,1,0.3,1); position:relative; overflow:hidden;
+}
+.social-icon::before { content:''; position:absolute; inset:0; border-radius:50%; opacity:0; transition:opacity 0.3s; }
+.social-icon i { position:relative; z-index:1; }
+.social-icon:hover { transform:translateY(-5px) scale(1.1); }
+.social-icon.fb::before { background:#1877F2; } .social-icon.fb:hover::before{opacity:1;} .social-icon.fb:hover{color:#fff; box-shadow:0 12px 30px rgba(24,119,242,0.4);}
+.social-icon.ig::before { background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); } .social-icon.ig:hover::before{opacity:1;} .social-icon.ig:hover{color:#fff;}
+.social-icon.in::before { background:#0A66C2; } .social-icon.in:hover::before{opacity:1;} .social-icon.in:hover{color:#fff;}
+.social-icon.yt::before { background:#FF0000; } .social-icon.yt:hover::before{opacity:1;} .social-icon.yt:hover{color:#fff;}
+
+/* ====== SAVE BUTTON ====== */
+.save-section { padding:0 25px 25px; }
+.btn-save {
+    width:100%; padding:18px; border:none; border-radius:20px;
+    background:linear-gradient(135deg,var(--secondary) 0%,var(--primary) 100%);
+    color:#fff; font-weight:700; font-size:0.95rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    box-shadow:0 15px 40px rgba(26,26,236,0.4); transition:all 0.35s cubic-bezier(0.16,1,0.3,1);
+    position:relative; overflow:hidden; letter-spacing:1px;
+}
+.btn-save::before { content:''; position:absolute; inset:-2px; background:linear-gradient(135deg,var(--accent),var(--primary),var(--gold)); opacity:0; transition:opacity 0.4s; z-index:0; border-radius:22px; }
+.btn-save span, .btn-save i { position:relative; z-index:1; }
+.btn-save:hover { transform:translateY(-3px); box-shadow:0 25px 50px rgba(26,26,236,0.5); }
+.btn-save:hover::before { opacity:1; }
+
+/* ====== SECTION LABEL ====== */
+.section-label {
+    padding:0 30px; font-weight:800; font-size:1.05rem; margin-bottom:15px;
+    display:flex; align-items:center; gap:10px; color:var(--secondary);
+}
+.section-label i { color:var(--primary); filter:drop-shadow(0 0 6px rgba(26,26,236,0.5)); }
+
+/* ====== SERVICES ====== */
+.services-wrapper { display:flex; overflow-x:auto; padding:0 25px 30px; gap:15px; scrollbar-width:none; scroll-snap-type:x mandatory; }
+.services-wrapper::-webkit-scrollbar { display:none; }
+
+.service-card {
+    min-width:240px; scroll-snap-align:start;
+    background:linear-gradient(135deg,#ffffff,#f0f4ff);
+    padding:28px 22px; border-radius:28px; cursor:pointer;
+    border:1px solid rgba(26,26,236,0.1);
+    box-shadow:0 8px 30px rgba(26,26,236,0.1), 0 1px 0 rgba(255,255,255,0.8) inset;
+    transition:all 0.4s cubic-bezier(0.16,1,0.3,1);
+    position:relative; overflow:hidden;
+    animation:cardSlide 0.5s both;
+}
+.service-card:nth-child(1){animation-delay:0.2s}
+.service-card:nth-child(2){animation-delay:0.3s}
+.service-card:nth-child(3){animation-delay:0.4s}
+.service-card:nth-child(4){animation-delay:0.5s}
+.service-card:nth-child(5){animation-delay:0.6s}
+@keyframes cardSlide { from{opacity:0;transform:translateX(30px);} to{opacity:1;transform:translateX(0);} }
+.service-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--primary),var(--accent)); transform:scaleX(0); transform-origin:left; transition:transform 0.4s ease; }
+.service-card:hover { transform:translateY(-8px) scale(1.02); box-shadow:0 25px 60px rgba(26,26,236,0.2); }
+.service-card:hover::before { transform:scaleX(1); }
+
+.service-icon-wrap { width:56px; height:56px; border-radius:18px; background:linear-gradient(135deg,var(--primary),var(--primary-light)); display:flex; align-items:center; justify-content:center; margin-bottom:16px; box-shadow:0 8px 20px rgba(26,26,236,0.3); }
+.service-icon-wrap i { font-size:1.5rem; color:#fff; }
+.service-card h3 { font-size:1rem; font-weight:800; margin-bottom:8px; color:var(--secondary); }
+.service-card p { font-size:0.82rem; color:var(--text-light); line-height:1.6; }
+.service-card .tap-hint { display:flex; align-items:center; gap:5px; margin-top:14px; font-size:0.72rem; font-weight:700; color:var(--primary); opacity:0.7; }
+
+/* ====== PAYMENT ====== */
+.payment-area { padding:0 25px 30px; }
+.tabs-nav { display:flex; background:linear-gradient(135deg,#e8eeff,#f0f4ff); padding:5px; border-radius:18px; margin-bottom:15px; box-shadow:0 4px 15px rgba(26,26,236,0.1) inset; }
+.tab-trigger { flex:1; padding:11px; border:none; background:none; font-weight:700; color:var(--text-light); cursor:pointer; border-radius:14px; transition:all 0.3s; font-size:0.8rem; letter-spacing:1px; }
+.tab-trigger.active { background:#fff; color:var(--primary); box-shadow:0 8px 20px rgba(26,26,236,0.2); }
+.tab-pane { display:none; background:linear-gradient(135deg,#f8faff,#f0f4ff); border-radius:22px; padding:28px; text-align:center; border:1px solid rgba(26,26,236,0.08); }
+.tab-pane.active { display:block; animation:slideUp 0.4s cubic-bezier(0.16,1,0.3,1); }
+@keyframes slideUp { from{opacity:0;transform:translateY(15px);} to{opacity:1;transform:translateY(0);} }
+
+/* ====== CONTACT FORM ====== */
+.contact-form { padding:0 25px 30px; }
+.input-group { margin-bottom:15px; }
+.input-group input, .input-group textarea {
+    width:100%; padding:16px 20px; border-radius:16px;
+    border:2px solid rgba(26,26,236,0.1);
+    background:#fff; outline:none; font-family:'Plus Jakarta Sans',sans-serif;
+    font-size:0.9rem; color:var(--text-main);
+    box-shadow:0 4px 15px rgba(26,26,236,0.06);
+    transition:all 0.3s;
+}
+.input-group input:focus, .input-group textarea:focus { border-color:var(--primary); box-shadow:0 0 0 4px rgba(26,26,236,0.08); }
+
+/* ====== MAP ====== */
+.map-box { padding:0 25px 30px; }
+.map-iframe { width:100%; height:220px; border-radius:28px; border:none; box-shadow:0 10px 30px rgba(26,26,236,0.15); }
+
+/* ====== STATS BAR ====== */
+.stats-bar { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; padding:0 25px 30px; }
+.stat-item { background:linear-gradient(135deg,#fff,#f0f4ff); border-radius:20px; padding:18px 12px; text-align:center; box-shadow:0 6px 20px rgba(26,26,236,0.1); border:1px solid rgba(26,26,236,0.08); }
+.stat-num { font-family:'Cinzel',serif; font-size:1.5rem; font-weight:900; color:var(--primary); }
+.stat-label { font-size:0.65rem; color:var(--text-light); font-weight:700; letter-spacing:1px; margin-top:3px; text-transform:uppercase; }
+
+/* ====== SERVICE DETAIL PAGE (OVERLAY) ====== */
+.service-page {
+    position:fixed; inset:0; z-index:1000;
+    background:#070714;
+    overflow-y:auto;
+    transform:translateX(100%);
+    transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);
+    display:flex; flex-direction:column;
+}
+.service-page.open { transform:translateX(0); }
+
+.sp-header {
+    position:sticky; top:0; z-index:10;
+    padding:20px 25px;
+    display:flex; align-items:center; gap:16px;
+    background:rgba(7,7,20,0.85);
+    backdrop-filter:blur(20px);
+    border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.sp-back {
+    width:44px; height:44px; border-radius:14px;
+    background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; color:#fff; font-size:1.1rem; transition:all 0.3s;
+    flex-shrink:0;
+}
+.sp-back:hover { background:rgba(255,255,255,0.2); transform:translateX(-3px); }
+.sp-header-title { font-family:'Cinzel',serif; font-size:1rem; color:#fff; font-weight:700; letter-spacing:1px; }
+
+.sp-hero {
+    height:280px; position:relative; overflow:hidden;
+    display:flex; align-items:flex-end;
+}
+.sp-hero-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.sp-hero-overlay { position:absolute; inset:0; background:linear-gradient(180deg,rgba(7,7,20,0.2) 0%,rgba(7,7,20,0.9) 100%); }
+.sp-hero-content { position:relative; z-index:2; padding:30px 25px; }
+.sp-hero-icon { width:60px; height:60px; border-radius:18px; background:linear-gradient(135deg,var(--primary),var(--accent)); display:flex; align-items:center; justify-content:center; font-size:1.6rem; color:#fff; margin-bottom:14px; box-shadow:0 10px 30px rgba(26,26,236,0.5); }
+.sp-hero-content h1 { font-family:'Cinzel',serif; font-size:1.5rem; color:#fff; font-weight:900; margin-bottom:6px; }
+.sp-hero-content .sp-subtitle { color:rgba(255,255,255,0.6); font-size:0.85rem; font-weight:500; }
+
+.sp-body { padding:30px 25px; }
+.sp-desc { color:rgba(255,255,255,0.8); font-size:0.95rem; line-height:1.9; margin-bottom:28px; }
+
+.sp-section-title { color:#fff; font-weight:800; font-size:1rem; margin-bottom:16px; display:flex; align-items:center; gap:10px; }
+.sp-section-title::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,rgba(26,26,236,0.5),transparent); }
+
+.sp-features { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:28px; }
+.sp-feature { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:16px; display:flex; align-items:flex-start; gap:12px; }
+.sp-feature-icon { width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,rgba(26,26,236,0.4),rgba(0,212,170,0.3)); display:flex; align-items:center; justify-content:center; font-size:0.9rem; color:var(--accent); flex-shrink:0; }
+.sp-feature p { font-size:0.78rem; color:rgba(255,255,255,0.75); line-height:1.5; font-weight:500; }
+
+.sp-images { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:28px; }
+.sp-img-item { border-radius:18px; overflow:hidden; height:150px; position:relative; }
+.sp-img-item img { width:100%; height:100%; object-fit:cover; transition:transform 0.4s; }
+.sp-img-item:hover img { transform:scale(1.05); }
+.sp-img-item .sp-img-overlay { position:absolute; inset:0; background:linear-gradient(180deg,transparent 60%,rgba(7,7,20,0.7)); }
+
+.sp-video-wrap { border-radius:22px; overflow:hidden; margin-bottom:28px; position:relative; background:#000; }
+.sp-video-wrap iframe { width:100%; height:220px; border:none; display:block; }
+.sp-video-label { background:rgba(26,26,236,0.3); color:rgba(255,255,255,0.7); font-size:0.72rem; font-weight:700; letter-spacing:2px; text-align:center; padding:8px; }
+
+.sp-cta {
+    background:linear-gradient(135deg,var(--primary),var(--primary-light));
+    border-radius:20px; padding:24px; text-align:center;
+    box-shadow:0 15px 40px rgba(26,26,236,0.4);
+}
+.sp-cta p { color:rgba(255,255,255,0.7); font-size:0.85rem; margin-bottom:14px; }
+.sp-cta-btn {
+    display:inline-block; padding:14px 32px; border-radius:14px;
+    background:#fff; color:var(--primary); font-weight:800; font-size:0.9rem;
+    text-decoration:none; transition:all 0.3s; letter-spacing:1px;
+}
+.sp-cta-btn:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(0,0,0,0.2); }
+
+/* ====== PROFILE BLOWING ANIMATION ====== */
+.main-logo-wrap {
+    position: relative;
+}
+.main-logo-wrap::before,
+.main-logo-wrap::after {
+    content: '';
+    position: absolute;
+    
+    background: linear-gradient(135deg, var(--accent), var(--primary), var(--gold), var(--accent));
+    background-size: 300% 300%;
+    animation: glowBlow 3s ease-in-out infinite;
+    z-index: -1;
+}
+.main-logo-wrap::after {
+
+    border-radius: 55px;
+    opacity: 0.4;
+    animation: glowBlow 3s ease-in-out infinite 0.5s;
+}
+@keyframes glowBlow {
+    0%   { background-position: 0% 50%;   opacity: 0.8; transform: scale(1);    filter: blur(0px); }
+    50%  { background-position: 100% 50%; opacity: 1;   transform: scale(1.04); filter: blur(1px); }
+    100% { background-position: 0% 50%;   opacity: 0.8; transform: scale(1);    filter: blur(0px); }
+}
+/* Extra pulse rings */
+.logo-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 35px;
+    border: 2px solid rgba(0,212,170,0.5);
+    animation: ringPulse 2.5s ease-out infinite;
+    pointer-events: none;
+}
+.logo-ring:nth-child(2) { animation-delay: 0.7s; border-color: rgba(26,26,236,0.4); }
+.logo-ring:nth-child(3) { animation-delay: 1.4s; border-color: rgba(240,192,64,0.3); }
+@keyframes ringPulse {
+    0%   { transform: scale(1);    opacity: 1; }
+    100% { transform: scale(1.6);  opacity: 0; }
+}
+
+/* ====== PDF TEMPLATE ====== */
+#pdf-template { position:fixed; left:-9999px; top:-9999px; z-index:-999; pointer-events:none; }
+.pdf-business-card {
+    width: 1050px; height: 600px;
+    background: linear-gradient(135deg, #050d1f 0%, #0b1e4b 40%, #1a1aec 100%);
+    color: #fff; display: flex; position: relative; overflow: hidden;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+/* Decorative BG orbs */
+.pdf-business-card::before {
+    content: ''; position: absolute; top: -180px; left: -180px;
+    width: 550px; height: 550px;
+    background: radial-gradient(circle, rgba(79,70,229,0.35), transparent 70%);
+    z-index: 1;
+}
+.pdf-business-card::after {
+    content: ''; position: absolute; bottom: -150px; right: -100px;
+    width: 450px; height: 450px;
+    background: radial-gradient(circle, rgba(0,212,170,0.2), transparent 70%);
+    z-index: 1;
+}
+/* Diagonal accent stripe */
+.pdf-stripe {
+    position: absolute; top: 0; bottom: 0; left: 42%;
+    width: 3px;
+    background: linear-gradient(180deg, transparent 0%, rgba(0,212,170,0.6) 30%, rgba(240,192,64,0.6) 70%, transparent 100%);
+    z-index: 3;
+}
+/* Corner badge */
+.pdf-corner-badge {
+    position: absolute; top: 30px; right: 40px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 50px; padding: 6px 18px;
+    font-size: 11px; font-weight: 800; letter-spacing: 3px; color: rgba(255,255,255,0.7);
+    z-index: 5;
+}
+.pdf-left {
+    width: 43%; padding: 55px 50px 55px 60px;
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+    z-index: 4; position: relative;
+}
+.pdf-avatar-wrap {
+    width: 130px; height: 130px; border-radius: 28px;
+    padding: 3px; margin-bottom: 24px;
+    background: linear-gradient(135deg, #00d4aa, #1a1aec, #f0c040);
+    box-shadow: 0 15px 50px rgba(26,26,236,0.6), 0 0 0 6px rgba(255,255,255,0.08);
+    flex-shrink: 0;
+}
+.pdf-profile-img {
+    width: 100%; height: 100%; border-radius: 26px;
+    object-fit: cover; display: block;
+}
+.pdf-name {
+    font-family: 'Cinzel', serif; font-size: 38px; font-weight: 900;
+    letter-spacing: 3px; line-height: 1.05; color: #ffffff;
+    margin-bottom: 6px; text-transform: uppercase;
+}
+.pdf-title {
+    font-size: 11px; font-weight: 800; letter-spacing: 4px;
+    color: #00d4aa; margin-bottom: 22px; text-transform: uppercase;
+}
+.pdf-divider {
+    width: 60px; height: 3px; border-radius: 2px;
+    background: linear-gradient(90deg, #00d4aa, #1a1aec);
+    margin-bottom: 22px;
+}
+.pdf-bio p {
+    font-size: 13.5px; color: rgba(255,255,255,0.75);
+    margin-bottom: 10px; font-weight: 500;
+    display: flex; align-items: center; gap: 10px; line-height: 1.4;
+}
+.pdf-bio i { color: #f0c040; font-size: 14px; flex-shrink: 0; }
+.pdf-right {
+    width: 57%; padding: 50px 55px 50px 60px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    z-index: 4; position: relative;
+}
+.pdf-right-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; }
+.pdf-contact-info { flex: 1; }
+.pdf-contact-info-title {
+    font-size: 10px; font-weight: 800; letter-spacing: 3px;
+    color: rgba(255,255,255,0.4); margin-bottom: 20px; text-transform: uppercase;
+}
+.pdf-contact-info p {
+    font-size: 14px; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 14px;
+    color: rgba(255,255,255,0.9); font-weight: 500;
+}
+.pdf-contact-icon {
+    color: #fff; background: linear-gradient(135deg, #1a1aec, #4f46e5);
+    width: 34px; height: 34px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 10px; font-size: 13px;
+    box-shadow: 0 4px 14px rgba(26,26,236,0.5);
+}
+.pdf-qr-side { display: flex; flex-direction: column; align-items: center; }
+.pdf-qr-container {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px; padding: 16px 18px; text-align: center;
+}
+.pdf-qr {
+    width: 110px; height: 110px; border-radius: 12px;
+    background: white; padding: 6px; display: block;
+}
+.pdf-qr-label {
+    font-size: 9px; font-weight: 800; letter-spacing: 2px;
+    color: rgba(255,255,255,0.45); margin-top: 10px; text-transform: uppercase;
+}
+/* Bottom bar */
+.pdf-bottom-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px;
+}
+.pdf-stats { display: flex; gap: 30px; }
+.pdf-stat { text-align: center; }
+.pdf-stat-num { font-family: 'Cinzel', serif; font-size: 22px; font-weight: 900; color: #f0c040; }
+.pdf-stat-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-top: 2px; }
+.pdf-website {
+    font-size: 12px; font-weight: 700; letter-spacing: 2px;
+    color: rgba(255,255,255,0.5); text-transform: uppercase;
+}
+.pdf-website span { color: #00d4aa; }
+
+/* ====== SCROLL REVEAL ====== */
+.reveal { opacity:0; transform:translateY(30px); transition:all 0.7s cubic-bezier(0.16,1,0.3,1); }
+.reveal.visible { opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- PARTICLES -->
+<div id="particles"></div>
+
+<!-- MAIN CARD -->
+<div class="card-container" id="mainCard">
+
+    <div class="hero">
+        <img class="hero-img" src="https://i.ibb.co.com/qM9D2tVt/Whats-App-Image-2026-07-11-at-8-23-51-PM.jpg" alt="Cover">
+        <div class="hero-overlay"></div>
+        <div class="hero-particles">
+            <div class="hero-orb orb1"></div>
+            <div class="hero-orb orb2"></div>
+        </div>
+        <div class=""><i class="fa-solid fa-circle" style="color:#22c55e;font-size:8px;margin-right:5px;"></i></div>
+    </div>
+
+    <div class="profile-header">
+        <div class="main-logo-wrap">
+            <div class="logo-ring"></div>
+            <div class="logo-ring"></div>
+            <div class="logo-ring"></div>
+            <img src="https://i.ibb.co.com/PvM9CL7X/Whats-App-Image-2026-07-11-at-8-26-06-PM.jpg" class="main-logo" alt="AKS Swadhin">
+            <div class=""></div>
+        </div>
+        <div class="company-info">
+            <h1>MAHATHIR MOHARAAJ</h1>
+            <p class="title-tag">SOCIAL ACTIVIST</p>
+            <p class="bio"><i class="fa-solid fa-award" style="color:var(--gold);margin-right:6px;"></i>Founder of Hope</p>
+        </div>
+    </div>
+
+    <div class="fancy-divider"><div class="line"></div><div class="dot"></div><div class="line"></div></div>
+
+    <!-- STATS -->
+    <div class="stats-bar reveal" style="margin-top:20px;">
+        <div class="stat-item"><div class="stat-num">5+</div><div class="stat-label">Years Exp.</div></div>
+        <div class="stat-item"><div class="stat-num">100+</div><div class="stat-label">Projects</div></div>
+        <div class="stat-item"><div class="stat-num">50+</div><div class="stat-label">Partners</div></div>
+    </div>
+
+    <!-- ACTION BAR -->
+    <div class="action-bar">
+        <a href="tel:+8801533494733" class="action-item"><div class="icon-box"><i class="fa-solid fa-phone"></i></div><span>CALL</span></a>
+        <a href="mailto:hello.mahjathirmoharaaj@gmail.com" class="action-item"><div class="icon-box"><i class="fa-solid fa-envelope"></i></div><span>EMAIL</span></a>
+        <a href="https://wa.me/8801533494733" class="action-item"><div class="icon-box"><i class="fa-brands fa-whatsapp"></i></div><span>WHATSAPP</span></a>
+        <a href="#" class="action-item"><div class="icon-box"><i class="fa-solid fa-globe"></i></div><span>WEBSITE</span></a>
+    </div>
+
+    <!-- SOCIAL BAR -->
+    <div class="social-bar">
+        <a href="#" target="_blank" class="social-icon fb"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#" target="_blank" class="social-icon ig"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#" target="_blank" class="social-icon in"><i class="fa-brands fa-linkedin-in"></i></a>
+        <a href="#" target="_blank" class="social-icon yt"><i class="fa-brands fa-youtube"></i></a>
+    </div>
+
+    <!-- SAVE BUTTON -->
+    <div class="save-section">
+        <button onclick="downloadCardPDF()" id="pdfBtn" class="btn-save">
+            <i class="fa-solid fa-id-card"></i> <span>SAVE BUSINESS CARD (PDF)</span>
+        </button>
+    </div>
+
+   
+
+    <!-- CONTACT FORM -->
+    <div class="contact-form reveal">
+        <h2 class="section-label"><i class="fa-solid fa-paper-plane"></i> Quick Inquiry</h2>
+        <form action="https://formsubmit.co/mahathirmoharaaj@gmail.com" method="POST">
+            <div class="input-group"><input type="text" name="name" placeholder="Full Name" required></div>
+            <div class="input-group"><input type="email" name="email" placeholder="Email Address" required></div>
+            <div class="input-group"><textarea name="message" placeholder="Your message..." rows="3" required></textarea></div>
+            <input type="hidden" name="_captcha" value="false">
+            <button type="submit" class="btn-save" style="margin-top:5px;"><i class="fa-solid fa-paper-plane"></i> <span>SEND MESSAGE</span></button>
+        </form>
+    </div>
+
+    <!-- MAP -->
+    <div class="map-box reveal">
+        <h2 class="section-label"><i class="fa-solid fa-location-dot"></i> Location</h2>
+        <iframe class="map-iframe" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d117964.67722897!2d90.33943!3d23.7753634!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755b8b087026b81%3A0x8fa563bbdd5904c2!2sDhaka%2C%20Bangladesh!5e0!3m2!1sen!2sbd!4v1" allowfullscreen loading="lazy"></iframe>
+    </div>
+</div>
+
+<!-- ===== SERVICE DETAIL PAGES ===== -->
+
+<!-- PDF TEMPLATE -->
+<div id="pdf-template">
+    <div class="pdf-business-card" id="cardExport">
+        <div class="pdf-stripe"></div>
+        <div class=""></div>
+        <div class="pdf-left">
+            <div class="pdf-avatar-wrap">
+                <img src="https://i.ibb.co.com/PvM9CL7X/Whats-App-Image-2026-07-11-at-8-26-06-PM.jpg" alt="Mahathir" class="pdf-profile-img" crossorigin="anonymous">
+            </div>
+            <p class="pdf-name">MAHATHIR MOHARAAJ</p>
+            <p class="pdf-title">SOCIAL ACTIVIST</p>
+            <div class="pdf-divider"></div>
+            <div class="pdf-bio">
+                <p><i class="fa-solid fa-award"></i> Founder of Hope</p>
+                <p><i class=""></i></p>
+                <p><i class="fa-solid fa-location-dot"></i> Dhaka, Bangladesh</p>
+            </div>
+        </div>
+        <div class="pdf-right">
+            <div class="pdf-right-top">
+                <div class="pdf-contact-info">
+                    <p class="pdf-contact-info-title">Contact Information</p>
+                    <p><span class="pdf-contact-icon"><i class="fa-solid fa-phone"></i></span> +88 01533494733</p>
+                    <p><span class="pdf-contact-icon" style="background:linear-gradient(135deg,#25D366,#128C7E);"><i class="fa-brands fa-whatsapp"></i></span> +88 01533494733</p>
+                    <p><span class="pdf-contact-icon" style="background:linear-gradient(135deg,#ea4335,#c23321);"><i class="fa-solid fa-envelope"></i></span> mahathirmoharaaj@gmail.com</p>
+                    <p><span class="pdf-contact-icon" style="background:linear-gradient(135deg,#00d4aa,#009977);"><i class="fa-solid fa-globe"></i></span> www.hope.com</p>
+                </div>
+                <div class="pdf-qr-side">
+                    <div class="pdf-qr-container">
+                        <img src="https://i.ibb.co.com/VWFSnr6r/qrcode-349126995-09ce54fc59f8c7077d07df41397d6942.png" class="pdf-qr" alt="QR Code" crossorigin="anonymous">
+                        <p class="pdf-qr-label">SCAN TO CONNECT</p>
+                    </div>
+                </div>
+            </div>
+            <div class="pdf-bottom-bar">
+                <div class="pdf-stats">
+                    <div class="pdf-stat"><div class="pdf-stat-num">5+</div><div class="pdf-stat-label">Years Exp.</div></div>
+                    <div class="pdf-stat"><div class="pdf-stat-num">100+</div><div class="pdf-stat-label">Projects</div></div>
+                    <div class="pdf-stat"><div class="pdf-stat-num">50+</div><div class="pdf-stat-label">Partners</div></div>
+                </div>
+                <div class="pdf-website">www.<span>hope</span>.com</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+/* ===== PARTICLES ===== */
+(function() {
+    const container = document.getElementById('particles');
+    const colors = ['rgba(79,70,229,0.6)','rgba(0,212,170,0.4)','rgba(240,192,64,0.3)','rgba(99,102,241,0.5)'];
+    for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 6 + 2;
+        p.style.cssText = `
+            width:${size}px; height:${size}px;
+            left:${Math.random() * 100}%;
+            background:${colors[Math.floor(Math.random() * colors.length)]};
+            animation-duration:${Math.random() * 15 + 10}s;
+            animation-delay:${Math.random() * 10}s;
+        `;
+        container.appendChild(p);
+    }
+})();
+
+/* ===== SCROLL REVEAL ===== */
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ===== TAB SWITCHING ===== */
+function openTab(evt, tabName) {
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-trigger').forEach(t => t.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+    evt.currentTarget.classList.add('active');
+}
+
+/* ===== SERVICE PAGES ===== */
+function openService(id) {
+    const page = document.getElementById('sp-' + id);
+    if (!page) return;
+    page.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    page.scrollTop = 0;
+}
+function closeService(id) {
+    document.getElementById('sp-' + id).classList.remove('open');
+    document.body.style.overflow = '';
+}
+// Close on back gesture (popstate)
+window.addEventListener('popstate', () => {
+    document.querySelectorAll('.service-page.open').forEach(p => p.classList.remove('open'));
+    document.body.style.overflow = '';
+});
+
+/* ===== PDF DOWNLOAD — FIXED CONSISTENT SIZE ===== */
+async function downloadCardPDF() {
+    const btn = document.getElementById('pdfBtn');
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> <span>GENERATING...</span>';
+    btn.disabled = true;
+
+    try {
+        const card = document.getElementById('cardExport');
+        // Fixed card dimensions
+        const CARD_W = 1050;
+        const CARD_H = 600;
+
+        // Temporarily show and position for capture
+        const template = document.getElementById('pdf-template');
+        template.style.position = 'fixed';
+        template.style.left = '0';
+        template.style.top = '0';
+        template.style.zIndex = '-1';
+        template.style.opacity = '1';
+        template.style.visibility = 'visible';
+
+        // Wait for images to load
+        const images = card.querySelectorAll('img');
+        await Promise.all(Array.from(images).map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(res => { img.onload = res; img.onerror = res; });
+        }));
+
+        await new Promise(r => setTimeout(r, 400));
+
+        const canvas = await html2canvas(card, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+            width: CARD_W,
+            height: CARD_H,
+            scrollX: 0,
+            scrollY: 0,
+            backgroundColor: null,
+            imageTimeout: 15000,
+        });
+
+        // Restore hidden
+        template.style.position = 'fixed';
+        template.style.left = '-9999px';
+        template.style.top = '-9999px';
+        template.style.opacity = '0';
+        template.style.visibility = 'hidden';
+
+        // PDF dimensions in mm — standard business card landscape at 300dpi
+        // 1050px × 600px at 96dpi → scale to A5 landscape = 210mm × 148mm
+        const PDF_W_MM = 279;  // ~letter width
+        const PDF_H_MM = 159;  // proportional to 1050:600
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+            orientation: 'landscape',
+            unit: 'mm',
+            format: [PDF_W_MM, PDF_H_MM],
+            compress: true,
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.97);
+        pdf.addImage(imgData, 'JPEG', 0, 0, PDF_W_MM, PDF_H_MM, '', 'FAST');
+        pdf.save('MAHATHIR_MOHARAAJ_Business_Card.pdf');
+
+        btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> <span>DOWNLOADED!</span>';
+        btn.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.background = '';
+            btn.disabled = false;
+        }, 3000);
+    } catch(err) {
+        console.error('PDF error:', err);
+        btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> <span>RETRY</span>';
+        btn.disabled = false;
+        setTimeout(() => { btn.innerHTML = originalHTML; }, 3000);
+    }
+}
+</script>
+</body>
+</html>
